@@ -1,2 +1,4 @@
-/.idea/
+# IntellijIdea files
+*.iml
+.idea
 /target/
