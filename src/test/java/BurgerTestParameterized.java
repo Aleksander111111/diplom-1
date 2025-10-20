@@ -17,13 +17,20 @@ public class BurgerTestParameterized {
 
     private Burger burger;
     private final Bun bunMock;
-    private final Ingredient ingredientMock1;
-    private final Ingredient ingredientMock2;
+    private final Ingredient firstIngredientMock;
+    private final Ingredient secondIngredientMock;
 
-    public BurgerTestParameterized(Bun bunMock, Ingredient ingredientMock1, Ingredient ingredientMock2) {
+    // Константы для замены magic numbers
+    private static final float BUN_PRICE_PARAM = 100.0f;
+    private static final float FIRST_INGREDIENT_PRICE = 50.0f;
+    private static final float SECOND_INGREDIENT_PRICE = 70.0f;
+    private static final float FLOAT_DELTA = 0.0001f;
+    private static final int BUN_MULTIPLIER = 2;
+
+    public BurgerTestParameterized(Bun bunMock, Ingredient firstIngredientMock, Ingredient secondIngredientMock) {
         this.bunMock = bunMock;
-        this.ingredientMock1 = ingredientMock1;
-        this.ingredientMock2 = ingredientMock2;
+        this.firstIngredientMock = firstIngredientMock;
+        this.secondIngredientMock = secondIngredientMock;
     }
 
     @Before
@@ -35,40 +42,40 @@ public class BurgerTestParameterized {
     public static Collection<Object[]> data() {
         Bun bunMock = mock(Bun.class);
         when(bunMock.getName()).thenReturn("Test Bun");
-        when(bunMock.getPrice()).thenReturn(100f);
+        when(bunMock.getPrice()).thenReturn(BUN_PRICE_PARAM);
 
-        Ingredient ingredientMock1 = mock(Ingredient.class);
-        when(ingredientMock1.getName()).thenReturn("Hot Sauce");
-        when(ingredientMock1.getType()).thenReturn(IngredientType.SAUCE);
-        when(ingredientMock1.getPrice()).thenReturn(50f);
+        Ingredient firstIngredientMock = mock(Ingredient.class);
+        when(firstIngredientMock.getName()).thenReturn("Hot Sauce");
+        when(firstIngredientMock.getType()).thenReturn(IngredientType.SAUCE);
+        when(firstIngredientMock.getPrice()).thenReturn(FIRST_INGREDIENT_PRICE);
 
-        Ingredient ingredientMock2 = mock(Ingredient.class);
-        when(ingredientMock2.getName()).thenReturn("Sausage");
-        when(ingredientMock2.getType()).thenReturn(IngredientType.FILLING);
-        when(ingredientMock2.getPrice()).thenReturn(70f);
+        Ingredient secondIngredientMock = mock(Ingredient.class);
+        when(secondIngredientMock.getName()).thenReturn("Sausage");
+        when(secondIngredientMock.getType()).thenReturn(IngredientType.FILLING);
+        when(secondIngredientMock.getPrice()).thenReturn(SECOND_INGREDIENT_PRICE);
 
         return Arrays.asList(new Object[][]{
-                {bunMock, ingredientMock1, ingredientMock2}
+                {bunMock, firstIngredientMock, secondIngredientMock}
         });
     }
 
     @Test
     public void testGetPrice() {
         burger.setBuns(bunMock);
-        burger.addIngredient(ingredientMock1);
-        burger.addIngredient(ingredientMock2);
+        burger.addIngredient(firstIngredientMock);
+        burger.addIngredient(secondIngredientMock);
 
-        float expectedPrice = bunMock.getPrice() * 2 + ingredientMock1.getPrice() + ingredientMock2.getPrice();
+        float expectedPrice = BUN_PRICE_PARAM * BUN_MULTIPLIER + FIRST_INGREDIENT_PRICE + SECOND_INGREDIENT_PRICE;
         float actualPrice = burger.getPrice();
 
-        assertEquals(expectedPrice, actualPrice, 0.0001);
+        assertEquals(expectedPrice, actualPrice, FLOAT_DELTA);
     }
 
     @Test
     public void testGetReceipt() {
         burger.setBuns(bunMock);
-        burger.addIngredient(ingredientMock1);
-        burger.addIngredient(ingredientMock2);
+        burger.addIngredient(firstIngredientMock);
+        burger.addIngredient(secondIngredientMock);
 
         String receipt = burger.getReceipt();
 
@@ -79,10 +86,10 @@ public class BurgerTestParameterized {
                         "(==== %s ====)%n" +
                         "%nPrice: %f%n",
                 bunMock.getName(),
-                ingredientMock1.getType().toString().toLowerCase(),
-                ingredientMock1.getName(),
-                ingredientMock2.getType().toString().toLowerCase(),
-                ingredientMock2.getName(),
+                firstIngredientMock.getType().toString().toLowerCase(),
+                firstIngredientMock.getName(),
+                secondIngredientMock.getType().toString().toLowerCase(),
+                secondIngredientMock.getName(),
                 bunMock.getName(),
                 burger.getPrice()
         );
